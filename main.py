@@ -36,14 +36,19 @@ app = FastAPI(
     version="1.0.0 (v7 CNS model)",
 )
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")  # free-tier instance has no GPU
 
 with open(CONFIG_PATH) as f:
     config = json.load(f)
 COG_KEYWORDS = config["keywords"]
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO, token=HF_TOKEN)
-bert_model = AutoModelForSequenceClassification.from_pretrained(MODEL_REPO, token=HF_TOKEN)
+# float16 roughly halves the model's memory footprint vs. the default float32,
+# with no meaningful accuracy loss for inference -- needed to fit Render's
+# free-tier 512MB RAM limit (a full float32 load exceeded it in testing).
+bert_model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_REPO, token=HF_TOKEN, torch_dtype=torch.float16
+)
 bert_model.to(device)
 bert_model.eval()
 
@@ -92,7 +97,7 @@ def bert_predict(text: str) -> float:
     ).to(device)
     with torch.no_grad():
         logits = bert_model(**inputs).logits
-    return torch.softmax(logits, dim=1)[0, 1].item()
+    return torch.softmax(logits.float(), dim=1)[0, 1].item()
 
 
 def check_review_triggers(text: str) -> str | None:
