@@ -10,6 +10,12 @@ Predictions flagged for review should be checked by a human before being
 treated as ground truth -- this is a core design requirement, not optional,
 based on the documented residual error patterns found during development
 (see MODEL_CARD.md).
+
+NOTE ON THE MODEL FILE: this loads a quantized, TorchScript-traced version
+of the v7 CNS model (169MB vs. the original ~433MB), specifically to fit
+Render's free-tier 512MB RAM limit. This was validated against the same
+known test cases used throughout development before being deployed --
+see PHASE4_final_results.md / project history for the validation table.
 """
 
 import json
@@ -17,13 +23,15 @@ import os
 import torch
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer
+from huggingface_hub import hf_hub_download
 
 # ---------------------------------------------------------------------------
 # Startup: load the hybrid classifier components once, at server start
 # ---------------------------------------------------------------------------
 
 MODEL_REPO = "Mubashir-ZZ/cognitive-classifier-v7-cns"   # v7 CNS BERT model, hosted on HF Hub (private)
+QUANTIZED_MODEL_FILENAME = "cns_v7_quantized.pt"
 CONFIG_PATH = "./hybrid_config.json"
 HF_TOKEN = os.environ.get("HF_TOKEN")  # set this in Render's environment variables, never hardcode it
 
@@ -33,7 +41,7 @@ app = FastAPI(
         "Predicts whether a clinical trial registers a neurocognitive outcome. "
         "AI-ASSISTED SCREENING TOOL -- not a final determination. See /about."
     ),
-    version="1.0.0 (v7 CNS model)",
+    version="1.0.0 (v7 CNS model, quantized)",
 )
 
 device = torch.device("cpu")  # free-tier instance has no GPU
@@ -43,14 +51,13 @@ with open(CONFIG_PATH) as f:
 COG_KEYWORDS = config["keywords"]
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO, token=HF_TOKEN)
-# float16 roughly halves the model's memory footprint vs. the default float32,
-# with no meaningful accuracy loss for inference -- needed to fit Render's
-# free-tier 512MB RAM limit (a full float32 load exceeded it in testing).
-bert_model = AutoModelForSequenceClassification.from_pretrained(
-    MODEL_REPO, token=HF_TOKEN, torch_dtype=torch.float16, low_cpu_mem_usage=True
-)
-bert_model.to(device)
-bert_model.eval()
+
+# Download just the quantized model file (169MB) rather than the full
+# transformers model-loading path -- smaller, and never touches the
+# original ~433MB float32 weights at all.
+model_path = hf_hub_download(repo_id=MODEL_REPO, filename=QUANTIZED_MODEL_FILENAME, token=HF_TOKEN)
+traced_model = torch.jit.load(model_path, map_location=device)
+traced_model.eval()
 
 # Confidence zone: BERT probabilities in this range are genuinely uncertain
 # and always get flagged for human review, regardless of which side of 0.5
@@ -63,7 +70,7 @@ UNCERTAIN_HIGH = 0.75
 # even when the model is confident, since these are exactly the categories
 # where confident-but-wrong predictions have occurred during testing.
 REVIEW_TRIGGER_PATTERNS = [
-    "qlq-c30", "qlq c30", "eortc",              # QoL-subscale trap
+    "qlq-c30", "qlq c30", "eortc",              # QoL-subscale trap (still unresolved as of v7)
     "karnofsky", " kps ", "kps)",                 # performance-status trap
     "rcbv", "rcbf", "suvr", "dsc-mri", "pet/ct",  # imaging/biomarker trap
     "hospitalization", "emergency department",    # healthcare-utilization trap
@@ -96,8 +103,16 @@ def bert_predict(text: str) -> float:
         text, truncation=True, padding=True, max_length=512, return_tensors="pt"
     ).to(device)
     with torch.no_grad():
-        logits = bert_model(**inputs).logits
-    return torch.softmax(logits.float(), dim=1)[0, 1].item()
+        out = traced_model(inputs["input_ids"], inputs["attention_mask"])
+        # the traced model's output type can vary (dict/tuple/object) depending
+        # on export details -- handle all three, same as validated in testing
+        if isinstance(out, dict):
+            logits = out["logits"]
+        elif isinstance(out, tuple):
+            logits = out[0]
+        else:
+            logits = out.logits
+    return torch.softmax(logits, dim=1)[0, 1].item()
 
 
 def check_review_triggers(text: str) -> str | None:
@@ -130,7 +145,7 @@ def predict(req: PredictionRequest):
             trial_id=req.trial_id,
             predicted_cognitive=predicted,
             confidence=round(prob, 4),
-            method="BERT (v7)",
+            method="BERT (v7, quantized)",
             review_recommended=review,
             review_reason=reason,
         )
@@ -159,7 +174,7 @@ def about():
     return {
         "purpose": "Research screening tool for detecting neurocognitive outcome measurement in oncology clinical trials.",
         "important": "This is AI-assisted screening, NOT a final determination. Predictions with review_recommended=true must be checked by a human before being treated as ground truth.",
-        "cns_model": "Fine-tuned Bio_ClinicalBERT (v7), trained on 2,269 hand-verified trials across 4 cancer types.",
+        "cns_model": "Fine-tuned Bio_ClinicalBERT (v7), quantized to int8 and TorchScript-traced for deployment, trained on 2,269 hand-verified trials across 4 cancer types.",
         "other_cancer_types": "Keyword-presence rule, validated at ~99-100% accuracy against hand-labeled data.",
         "known_limitations": [
             "A specific QoL-subscale pattern (EORTC QLQ-C30-style multi-subscale mentions) remains unresolved despite five targeted retraining rounds.",
