@@ -6,17 +6,18 @@ A research screening tool that predicts whether a clinical trial's outcome text 
 
 ## Setup
 
-1. Place your v7 CNS model files (from `cns_classifier_v7.zip`) into `./model_cns/`
-2. Place `hybrid_config.json` (the keyword list) in the project root -- extract this from the same zip
-3. Install dependencies:
+1. The v7 CNS model loads automatically from Hugging Face Hub (`Mubashir-ZZ/cognitive-classifier-v7-cns`, private) -- no local model files needed.
+2. Set the `HF_TOKEN` environment variable to a Hugging Face access token with read access to that private repo (Settings -> Access Tokens on huggingface.co). Never commit this token to the repo -- set it as an environment variable in Render's dashboard.
+3. `hybrid_config.json` (the keyword list) is already included in this repo.
+4. Install dependencies:
    ```
    pip install -r requirements.txt
    ```
-4. Run locally:
+5. Run locally (with `HF_TOKEN` set in your environment):
    ```
    uvicorn main:app --reload
    ```
-5. Test it:
+6. Test it:
    ```
    curl -X POST http://localhost:8000/predict \
      -H "Content-Type: application/json" \
@@ -36,7 +37,8 @@ Hugging Face Spaces' Docker/Gradio options require a paid plan (confirmed direct
 1. Log into render.com (GitHub sign-in works, no separate password needed)
 2. New -> Web Service -> connect this GitHub repository
 3. Render auto-detects the `Dockerfile` in this repo -- no extra configuration needed
-4. Model files (`model_cns/` and `hybrid_config.json`, from `cns_classifier_v7.zip`) need to be added to this repo too before deploying, since Render builds directly from the repo contents
+4. In Render's dashboard, add an environment variable: `HF_TOKEN` = your Hugging Face access token (with read access to the private model repo)
+5. Deploy -- the model downloads automatically from Hugging Face Hub at startup, no manual file upload needed
 
 The included `Dockerfile` already uses port 8000 with `uvicorn`, matching Render's expected setup.
 
