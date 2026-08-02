@@ -47,7 +47,7 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO, token=HF_TOKEN)
 # with no meaningful accuracy loss for inference -- needed to fit Render's
 # free-tier 512MB RAM limit (a full float32 load exceeded it in testing).
 bert_model = AutoModelForSequenceClassification.from_pretrained(
-    MODEL_REPO, token=HF_TOKEN, torch_dtype=torch.float16
+    MODEL_REPO, token=HF_TOKEN, torch_dtype=torch.float16, low_cpu_mem_usage=True
 )
 bert_model.to(device)
 bert_model.eval()
