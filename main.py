@@ -13,6 +13,7 @@ based on the documented residual error patterns found during development
 """
 
 import json
+import os
 import torch
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
@@ -22,8 +23,9 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 # Startup: load the hybrid classifier components once, at server start
 # ---------------------------------------------------------------------------
 
-MODEL_DIR = "./model_cns"          # v7 CNS BERT model lives here
+MODEL_REPO = "Mubashir-ZZ/cognitive-classifier-v7-cns"   # v7 CNS BERT model, hosted on HF Hub (private)
 CONFIG_PATH = "./hybrid_config.json"
+HF_TOKEN = os.environ.get("HF_TOKEN")  # set this in Render's environment variables, never hardcode it
 
 app = FastAPI(
     title="Neurocognitive Outcome Classifier",
@@ -40,8 +42,8 @@ with open(CONFIG_PATH) as f:
     config = json.load(f)
 COG_KEYWORDS = config["keywords"]
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
-bert_model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO, token=HF_TOKEN)
+bert_model = AutoModelForSequenceClassification.from_pretrained(MODEL_REPO, token=HF_TOKEN)
 bert_model.to(device)
 bert_model.eval()
 
