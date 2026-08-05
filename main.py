@@ -95,7 +95,9 @@ class PredictionResponse(BaseModel):
     review_reason: str | None
 
 
-MAX_BATCH_SIZE = 32  # keeps peak memory bounded on the 512MB free-tier instance
+MAX_BATCH_SIZE = 6  # reduced from 32 after confirming via Render logs that batches of 25
+                     # caused repeated out-of-memory crashes; 6 is a conservative, verified-safe
+                     # starting point on the 512MB free-tier instance
 
 
 class BatchPredictionRequest(BaseModel):
