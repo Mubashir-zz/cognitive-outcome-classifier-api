@@ -115,7 +115,7 @@ def keyword_rule(text: str) -> bool:
 
 def bert_predict(text: str) -> float:
     inputs = tokenizer(
-        text, truncation=True, padding=True, max_length=512, return_tensors="pt"
+        text, truncation=True, padding=True, max_length=256, return_tensors="pt"
     ).to(device)
     with torch.no_grad():
         out = traced_model(inputs["input_ids"], inputs["attention_mask"])
@@ -137,7 +137,7 @@ def bert_predict_batch(texts: list[str]) -> list[float]:
     tensor sized to the longest sequence in the batch -- bounded by
     MAX_BATCH_SIZE to keep memory usage predictable."""
     inputs = tokenizer(
-        texts, truncation=True, padding=True, max_length=512, return_tensors="pt"
+        texts, truncation=True, padding=True, max_length=256, return_tensors="pt"
     ).to(device)
     with torch.no_grad():
         out = traced_model(inputs["input_ids"], inputs["attention_mask"])
