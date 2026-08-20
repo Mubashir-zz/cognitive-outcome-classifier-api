@@ -6,7 +6,9 @@ import hashlib
 import json
 import logging
 import os
+import resource
 import secrets
+import sys
 from pathlib import Path
 from typing import Literal
 from uuid import uuid4
@@ -69,6 +71,13 @@ def tokenizer_sha256(value) -> str:
         ensure_ascii=False,
     )
     return sha256_text(payload)
+
+
+def peak_rss_mb() -> float:
+    """Return process peak resident memory in MiB on Linux and macOS."""
+    peak = float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+    bytes_used = peak if sys.platform == "darwin" else peak * 1024
+    return round(bytes_used / (1024 * 1024), 3)
 
 
 with CONFIG_PATH.open(encoding="utf-8") as handle:
@@ -357,5 +366,16 @@ def about() -> dict:
         "bert_input_policy": "Head-only truncation at the configured token limit; full text is still scanned by the keyword detector and truncation is disclosed per response.",
         "maximum_text_characters": MAX_TEXT_CHARACTERS,
         "maximum_request_bytes": MAX_REQUEST_BYTES,
+        **version_fields(),
+    }
+
+
+@app.get("/diagnostics")
+def diagnostics() -> dict:
+    """Authenticated staging measurements without request or outcome text."""
+    return {
+        "peak_rss_mb": peak_rss_mb(),
+        "review_delivery_failures_total": REVIEW_DELIVERY_FAILURES,
+        "prediction_authentication_enabled": bool(CLASSIFIER_API_KEY),
         **version_fields(),
     }
