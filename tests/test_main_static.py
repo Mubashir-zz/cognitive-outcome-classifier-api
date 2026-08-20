@@ -32,12 +32,17 @@ class MainStaticTests(unittest.TestCase):
         self.assertIn("MAX_REQUEST_BYTES", function)
         self.assertIn("compare_digest", function)
         self.assertIn("413", function)
+        self.assertIn("RequestBodyLimitMiddleware", self.source)
+        self.assertIn("consumed > self.max_bytes", self.source)
 
     def test_response_exposes_provenance_and_truncation(self):
         for field in (
             "source_text_sha256", "model_sha256", "tokenizer_sha256",
             "keyword_config_sha256", "decision_rule_version", "build_commit",
             "bert_truncated", "bert_input_tokens",
+            "model_manifest_sha256", "model_training_config_sha256",
+            "model_development_release_sha256", "model_selection_sha256",
+            "full_text_processed", "model_chunk_count", "max_chunk_start_character",
         ):
             self.assertIn(field, self.source)
 
@@ -54,6 +59,17 @@ class MainStaticTests(unittest.TestCase):
         self.assertNotIn("outcome_text", function)
         middleware = self.function_source("request_security_controls")
         self.assertNotIn('"/diagnostics"', middleware)
+
+    def test_v8_runtime_is_explicit_and_overlimit_input_fails(self):
+        self.assertIn('MODEL_RUNTIME not in {"legacy_v7", "v8_chunked"}', self.source)
+        self.assertIn("load_v8_artifact_spec", self.source)
+        self.assertIn("V8ChunkedRuntime", self.source)
+        self.assertIn("except ModelInputTooLongError", self.source)
+        self.assertIn("status_code=413", self.source)
+
+    def test_v8_model_is_primary_and_keyword_is_review_evidence(self):
+        self.assertIn('CNS_DECISION_MODE = "model_primary"', self.source)
+        self.assertIn("cns_model_primary_decision", self.source)
 
 
 if __name__ == "__main__":

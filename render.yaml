@@ -14,9 +14,19 @@ services:
         generateValue: true
       - key: MODEL_REPO
         value: Mubashir-ZZ/cognitive-classifier-v7-cns
+      - key: MODEL_RUNTIME
+        value: legacy_v7
       - key: MODEL_FILENAME
         value: cns_v7_quantized.pt
+      - key: MODEL_MANIFEST_FILENAME
+        value: quantization_manifest.json
+      - key: MODEL_MANIFEST_SHA256
+        sync: false
       - key: MODEL_REVISION
         sync: false
       - key: LOG_LEVEL
         value: INFO
+      - key: V8_INFERENCE_BATCH_SIZE
+        value: "8"
+      - key: V8_MAX_INPUT_TOKENS
+        value: "50000"

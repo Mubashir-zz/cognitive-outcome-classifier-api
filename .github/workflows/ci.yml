@@ -18,6 +18,13 @@ jobs:
         with:
           python-version: "3.11"
       - name: Compile source
-        run: python -m py_compile app/main.py app/logic.py tests/test_logic.py tests/test_config.py
+        run: >-
+          python -m py_compile
+          app/main.py app/logic.py app/model_runtime.py
+          scripts/benchmark_staging.py scripts/verify_v8_runtime_parity.py
+          scripts/smoke_v8_api_contract.py scripts/run_classifier_release_tests.py
+          scripts/collect_classifier_technical_results.py
+          training/evaluate_classifier_release_gates.py
+          tests/test_logic.py tests/test_config.py
       - name: Run deterministic unit tests
         run: python -m unittest discover -s tests -v

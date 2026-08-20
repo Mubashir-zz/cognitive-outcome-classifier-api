@@ -104,6 +104,44 @@ def cns_union_decision(
     )
 
 
+def cns_model_primary_decision(
+    model_probability: float,
+    has_keyword: bool,
+    trigger_reasons: list[str] | None = None,
+    *,
+    threshold: float,
+    uncertain_low: float = 0.25,
+    uncertain_high: float = 0.75,
+) -> Decision:
+    """V8 rule: the frozen model decides; keyword disagreement triggers review."""
+    if not 0.0 <= model_probability <= 1.0:
+        raise ValueError("model_probability must be between 0 and 1")
+    if not 0.0 <= threshold <= 1.0:
+        raise ValueError("threshold must be between 0 and 1")
+    if not 0.0 <= uncertain_low <= uncertain_high <= 1.0:
+        raise ValueError("invalid uncertainty zone")
+    model_positive = model_probability >= threshold
+    if model_positive and has_keyword:
+        basis = "bert_and_keyword"
+    elif model_positive:
+        basis = "bert_only"
+    elif has_keyword:
+        basis = "keyword_only_not_decisive"
+    else:
+        basis = "neither"
+    reasons = list(trigger_reasons or [])
+    if model_positive != has_keyword:
+        reasons.append("V8 and keyword detectors disagree")
+    if uncertain_low <= model_probability <= uncertain_high:
+        reasons.append("V8 probability is in the prespecified uncertainty zone")
+    return Decision(
+        predicted_cognitive=model_positive,
+        decision_basis=basis,
+        review_recommended=bool(reasons),
+        review_reasons=tuple(reasons),
+    )
+
+
 def keyword_only_decision(
     has_keyword: bool,
     trigger_reasons: list[str] | None = None,

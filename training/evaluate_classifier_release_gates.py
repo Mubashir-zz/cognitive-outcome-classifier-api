@@ -5,8 +5,21 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parent
+COLLECTOR_CANDIDATES = (
+    ROOT / "staging_classifier_v2" / "scripts" / "collect_classifier_technical_results.py",
+    ROOT.parent / "scripts" / "collect_classifier_technical_results.py",
+)
+TECHNICAL_COLLECTOR = next((path for path in COLLECTOR_CANDIDATES if path.is_file()), COLLECTOR_CANDIDATES[0])
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def main() -> None:
@@ -16,6 +29,8 @@ def main() -> None:
     parser.add_argument("--technical-results", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.output.exists():
+        raise FileExistsError(f"Refusing to overwrite release decision: {args.output}")
 
     gates = json.loads(args.gates.read_text(encoding="utf-8"))
     summary = json.loads((args.validation_dir / "validation_summary.json").read_text(encoding="utf-8"))
@@ -92,11 +107,52 @@ def main() -> None:
         "cold_start_seconds": technical.get("cold_start_seconds", float("inf")) <= expected_technical["maximum_cold_start_seconds"],
         "rollback_artifact_recorded": technical.get("rollback_artifact_recorded") is expected_technical["rollback_artifact_recorded"],
     }
+    if expected_technical.get("required_model_runtime"):
+        technical_checks["model_runtime"] = technical.get("model_runtime") == expected_technical["required_model_runtime"]
+    if expected_technical.get("required_cns_decision_mode"):
+        technical_checks["cns_decision_mode"] = technical.get("cns_decision_mode") == expected_technical["required_cns_decision_mode"]
+    if expected_technical.get("required_technical_results_version"):
+        technical_checks["technical_results_version"] = (
+            technical.get("technical_results_version") == expected_technical["required_technical_results_version"]
+        )
+    if expected_technical.get("require_hash_bound_evidence_collector"):
+        evidence_checks = technical.get("evidence_checks")
+        technical_checks["technical_evidence_status"] = technical.get("status") == "PASS"
+        technical_checks["technical_evidence_checks"] = (
+            isinstance(evidence_checks, dict)
+            and bool(evidence_checks)
+            and all(value is True for value in evidence_checks.values())
+            and technical.get("failed_evidence_checks") == []
+        )
+        technical_checks["technical_collector_binding"] = (
+            TECHNICAL_COLLECTOR.is_file()
+            and technical.get("input_sha256", {}).get("collector") == sha256(TECHNICAL_COLLECTOR)
+        )
+    if expected_technical.get("require_artifact_chain_match"):
+        reference_manifest_sha = summary.get("v8_quantization_manifest_sha256")
+        chain_values = {
+            "api": technical.get("model_manifest_sha256"),
+            "parity": technical.get("parity_quantization_manifest_sha256"),
+            "internal_test": technical.get("internal_test_quantization_manifest_sha256"),
+        }
+        technical_checks["artifact_chain_reference_present"] = (
+            isinstance(reference_manifest_sha, str) and len(reference_manifest_sha) == 64
+        )
+        technical_checks["artifact_chain_match"] = (
+            technical_checks["artifact_chain_reference_present"]
+            and all(value == reference_manifest_sha for value in chain_values.values())
+        )
     passed = all(scientific_checks.values()) and all(technical_checks.values())
     result = {
         "gate_version": gates["gate_version"],
         "decision": "PASS_FOR_MANUAL_PROMOTION_REVIEW" if passed else "HOLD",
         "automatic_deployment_performed": False,
+        "input_sha256": {
+            "gates": sha256(args.gates),
+            "validation_summary": sha256(args.validation_dir / "validation_summary.json"),
+            "performance_metrics": sha256(args.validation_dir / "performance_metrics.csv"),
+            "technical_results": sha256(args.technical_results) if args.technical_results else None,
+        },
         "scientific_checks": scientific_checks,
         "technical_checks": technical_checks,
         "failed_scientific": [name for name, ok in scientific_checks.items() if not ok],

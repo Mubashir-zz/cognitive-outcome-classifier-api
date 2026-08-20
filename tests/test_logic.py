@@ -8,6 +8,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.logic import (
+    cns_model_primary_decision,
     cns_union_decision,
     keyword_evidence,
     keyword_only_decision,
@@ -34,6 +35,12 @@ class LogicTests(unittest.TestCase):
         self.assertEqual(cns_union_decision(0.1, True).decision_basis, "keyword_only")
         self.assertEqual(cns_union_decision(0.1, False).decision_basis, "neither")
         self.assertTrue(cns_union_decision(0.1, True).review_recommended)
+
+    def test_v8_model_primary_rule_does_not_let_keyword_override_label(self):
+        decision = cns_model_primary_decision(0.1, True, threshold=0.5)
+        self.assertFalse(decision.predicted_cognitive)
+        self.assertEqual(decision.decision_basis, "keyword_only_not_decisive")
+        self.assertIn("V8 and keyword detectors disagree", decision.review_reasons)
 
     def test_non_cns_keyword_rule_is_not_called_probability(self):
         decision = keyword_only_decision(True)
