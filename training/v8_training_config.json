@@ -1,0 +1,43 @@
+{
+  "config_version": "1.0.0",
+  "development_release_sha256": "d2f85c3ee5d40ab974a98069b9850aa612760e2cfc3a41995fb7acf45e1e4cb3",
+  "base_model": "emilyalsentzer/Bio_ClinicalBERT",
+  "base_model_revision": "d5892b39a4adaed74b92212a44081509db72f87b",
+  "task": "binary cognitive-outcome classification",
+  "label_mapping": {"No": 0, "Yes": 1},
+  "max_sequence_tokens": 384,
+  "content_tokens_per_chunk": 382,
+  "chunk_overlap_tokens": 64,
+  "trial_probability_aggregation": "maximum_chunk_probability",
+  "loss_weighting": "each chunk receives inverse number-of-chunks weight so each trial contributes total weight 1",
+  "training": {
+    "epochs": 4,
+    "learning_rate": 0.00002,
+    "weight_decay": 0.01,
+    "warmup_fraction": 0.1,
+    "train_batch_size": 8,
+    "gradient_accumulation_steps": 4,
+    "maximum_gradient_norm": 1.0,
+    "seeds": [20260820, 20260821, 20260822, 20260823, 20260824]
+  },
+  "calibration": {
+    "method": "threshold selection on calibration split only",
+    "minimum_sensitivity": 0.9,
+    "minimum_specificity": 0.95,
+    "candidate_selection_order": ["feasible", "mcc", "balanced_accuracy", "sensitivity", "specificity"]
+  },
+  "internal_test": {
+    "evaluated_once_after_seed_and_threshold_are_frozen": true,
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 20260825
+  },
+  "quantization": {
+    "method": "PyTorch dynamic int8 quantization of Linear layers",
+    "parity_split": "calibration",
+    "required_class_agreement": 1.0,
+    "maximum_absolute_probability_delta": 0.02,
+    "serialized_artifact_must_pass_parity": true,
+    "target_runtime": "CPU"
+  },
+  "challenge_policy": "Challenge text hashes are excluded before splitting. Challenge labels, identities, strata, weights, and model outputs are never used for training, calibration, seed selection, prompt selection, or threshold selection."
+}
