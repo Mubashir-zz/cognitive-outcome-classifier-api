@@ -1,5 +1,26 @@
 {
-  "threshold": 0.9,
+  "config_version": "2.0.0-rc2",
+  "decision_rule_version": "cns-bert-or-keyword-rc2",
+  "bert_threshold": 0.5,
+  "bert_max_tokens": 256,
+  "uncertainty_zone": [0.25, 0.75],
+  "review_trigger_patterns": [
+    "qlq-c30",
+    "qlq c30",
+    "eortc",
+    "karnofsky",
+    " kps ",
+    "kps)",
+    "rcbv",
+    "rcbf",
+    "suvr",
+    "dsc-mri",
+    "pet/ct",
+    "hospitalization",
+    "emergency department",
+    "platelet",
+    "thrombocytopenia"
+  ],
   "keywords": [
     "mmse",
     "mini-mental",

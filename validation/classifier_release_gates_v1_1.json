@@ -1,0 +1,39 @@
+{
+  "gate_version": "1.1.0",
+  "frozen_before_unblinding": true,
+  "amendment_reason": "Before human-label unblinding, a blinded text-hash audit found 3 of 300 challenge texts identical to text present under other v7 training IDs. Version 1.1 adds mandatory overlap disclosure and strict text-disjoint performance gates.",
+  "purpose": "Promotion gates for a research-screening classifier; not clinical decision support.",
+  "scientific": {
+    "required_human_records": 300,
+    "maximum_ambiguous_rate": 0.05,
+    "primary_detector": "Union",
+    "minimum_weighted_sensitivity": 0.90,
+    "minimum_weighted_sensitivity_lower_95": 0.75,
+    "minimum_weighted_specificity": 0.95,
+    "minimum_weighted_balanced_accuracy": 0.90,
+    "minimum_weighted_mcc": 0.60,
+    "maximum_high_confidence_false_negatives": 0,
+    "require_training_text_overlap_flags": true,
+    "maximum_training_text_overlap_rate": 0.02,
+    "require_strict_text_disjoint_analysis": true,
+    "strict_text_disjoint_minimum_sensitivity": 0.90,
+    "strict_text_disjoint_minimum_sensitivity_lower_95": 0.75,
+    "strict_text_disjoint_minimum_specificity": 0.95,
+    "strict_text_disjoint_minimum_balanced_accuracy": 0.90,
+    "strict_text_disjoint_minimum_mcc": 0.60
+  },
+  "technical": {
+    "unit_tests_pass": true,
+    "contract_tests_pass": true,
+    "frozen_regression_tests_pass": true,
+    "analytic_api_parity": 1.0,
+    "non_echoing_validation_errors": true,
+    "payload_limit_enforced": true,
+    "artifact_hashes_exposed": true,
+    "prediction_authentication_enabled": true,
+    "maximum_peak_rss_mb": 450,
+    "maximum_cold_start_seconds": 120,
+    "rollback_artifact_recorded": true
+  },
+  "decision": "Every scientific and technical gate is conjunctive. Any missing or failed gate produces HOLD, never automatic promotion."
+}

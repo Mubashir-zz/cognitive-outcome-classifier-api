@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/cognitive-outcome-extraction-v1.json",
+  "title": "Evidence-grounded cognitive outcome extraction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "source_text_sha256",
+    "classification",
+    "cognitive_instruments",
+    "cognitive_domains",
+    "assessment_timepoints",
+    "evidence_spans",
+    "rationale",
+    "abstention_reason",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "record_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "source_text_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "classification": {"enum": ["cognitive_outcome", "not_cognitive_outcome", "abstain"]},
+    "cognitive_instruments": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 200},
+      "uniqueItems": true
+    },
+    "cognitive_domains": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "global_cognition",
+          "memory",
+          "attention",
+          "executive_function",
+          "processing_speed",
+          "language",
+          "visuospatial_function",
+          "social_cognition",
+          "other_cognitive_domain"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "assessment_timepoints": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 200},
+      "uniqueItems": true
+    },
+    "evidence_spans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["start", "end", "text", "supports"],
+        "properties": {
+          "start": {"type": "integer", "minimum": 0},
+          "end": {"type": "integer", "minimum": 1},
+          "text": {"type": "string", "minLength": 1},
+          "supports": {"enum": ["classification", "instrument", "domain", "timepoint", "exclusion"]}
+        }
+      }
+    },
+    "rationale": {"type": ["string", "null"], "maxLength": 1000},
+    "abstention_reason": {"type": ["string", "null"], "maxLength": 500},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_provider", "model_name", "model_revision", "prompt_sha256", "temperature"],
+      "properties": {
+        "model_provider": {"type": "string", "minLength": 1, "maxLength": 100},
+        "model_name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "model_revision": {"type": "string", "minLength": 1, "maxLength": 200},
+        "prompt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "temperature": {"type": "number", "const": 0}
+      }
+    }
+  }
+}
