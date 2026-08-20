@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: cognitive-outcome-classifier-v2-staging
+    runtime: docker
+    plan: free
+    branch: codex/v2-rc2-validation-gated
+    autoDeployTrigger: off
+    healthCheckPath: /health
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: HF_TOKEN
+        sync: false
+      - key: CLASSIFIER_API_KEY
+        generateValue: true
+      - key: MODEL_REPO
+        value: Mubashir-ZZ/cognitive-classifier-v7-cns
+      - key: MODEL_FILENAME
+        value: cns_v7_quantized.pt
+      - key: MODEL_REVISION
+        sync: false
+      - key: LOG_LEVEL
+        value: INFO
