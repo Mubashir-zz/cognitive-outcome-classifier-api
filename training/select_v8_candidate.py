@@ -25,6 +25,14 @@ def read_predictions(path: Path) -> list[dict[str, str]]:
         raise ValueError(f"Unexpected calibration prediction schema: {path}")
     if len({row["NCT_or_TrialID"] for row in rows}) != len(rows):
         raise ValueError("Calibration predictions contain duplicate trial IDs")
+    for row in rows:
+        if row["Cancer_Type"] not in {"CNS", "Breast", "Lung", "HeadNeck"}:
+            raise ValueError("Calibration predictions contain an invalid cancer type")
+        if row["Label"] not in {"0", "1"}:
+            raise ValueError("Calibration predictions contain an invalid label")
+        probability = float(row["Probability"])
+        if not math.isfinite(probability) or not 0 <= probability <= 1:
+            raise ValueError("Calibration predictions contain an invalid probability")
     return rows
 
 
@@ -47,6 +55,8 @@ def select(candidates_dir: Path, config_path: Path, output: Path) -> dict:
         raise FileExistsError(f"Refusing to overwrite selection: {output}")
     config = json.loads(config_path.read_text(encoding="utf-8"))
     calibration = config["calibration"]
+    config_sha = sha256(config_path)
+    release_sha = config.get("development_release_sha256")
     candidate_results = []
     for seed in [int(value) for value in config["training"]["seeds"]]:
         candidate_dir = candidates_dir / f"candidate_seed_{seed}"
@@ -55,11 +65,21 @@ def select(candidates_dir: Path, config_path: Path, output: Path) -> dict:
         if not manifest_path.exists() or not prediction_path.exists():
             raise FileNotFoundError(f"Missing frozen candidate artifacts for seed {seed}")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if manifest.get("seed") != seed or manifest.get("internal_test_accessed") is not False:
+        if (
+            manifest.get("seed") != seed
+            or manifest.get("internal_test_accessed") is not False
+            or manifest.get("challenge_data_accessed") is not False
+        ):
             raise ValueError(f"Candidate manifest is invalid for seed {seed}")
+        if manifest.get("training_config_sha256") != config_sha:
+            raise ValueError(f"Candidate config binding mismatch for seed {seed}")
+        if manifest.get("development_release_sha256") != release_sha:
+            raise ValueError(f"Candidate release binding mismatch for seed {seed}")
         if manifest.get("calibration_predictions_sha256") != sha256(prediction_path):
             raise ValueError(f"Calibration prediction hash mismatch for seed {seed}")
         rows = read_predictions(prediction_path)
+        if manifest.get("calibration_records_scored") != len(rows):
+            raise ValueError(f"Calibration record count mismatch for seed {seed}")
         cns = [row for row in rows if row["Cancer_Type"] == "CNS"]
         if not cns or {row["Label"] for row in cns} != {"0", "1"}:
             raise ValueError(f"CNS calibration data for seed {seed} lacks both labels")
@@ -98,8 +118,10 @@ def select(candidates_dir: Path, config_path: Path, output: Path) -> dict:
     result = {
         "selection_version": "1.0.0",
         "status": "CANDIDATE_SELECTED_ON_CALIBRATION_ONLY",
-        "training_config_sha256": sha256(config_path),
+        "training_config_sha256": config_sha,
         "selection_scope": "CNS calibration records",
+        "threshold_selection_order": calibration["threshold_selection_order"],
+        "seed_selection_order": calibration["seed_selection_order"],
         "selected_seed": chosen["seed"],
         "selected_model_dir": str(Path(chosen["candidate_dir"]) / "model"),
         "selected_threshold": chosen["cns_threshold_selection"]["selected"]["threshold"],

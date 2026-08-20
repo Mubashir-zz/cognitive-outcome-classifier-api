@@ -11,8 +11,8 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
-from quantize_v8_model import score_fixed_length
-from train_v8_chunked_bert import require_ml_dependencies, sha256_file, validate_inputs, write_predictions
+from quantize_v8_model import score_fixed_length, validate_quantized_artifacts, write_predictions
+from train_v8_chunked_bert import require_ml_dependencies, sha256_file, validate_inputs
 from v8_model_core import confusion_metrics
 
 
@@ -98,30 +98,15 @@ def evaluate(
         raise ValueError("Selection provenance does not certify untouched evaluation data")
     if selection.get("training_config_sha256") != sha256_file(config_path):
         raise ValueError("Selection is not bound to this training configuration")
-    quantization = json.loads(quantization_manifest_path.read_text(encoding="utf-8"))
-    if quantization.get("status") != "QUANTIZED_CANDIDATE_PASSED_CALIBRATION_PARITY":
-        raise ValueError("Quantized deployment artifact has not passed calibration parity")
-    if quantization.get("selection_sha256") != sha256_file(selection_path):
-        raise ValueError("Quantization manifest is not bound to this frozen selection")
-    if quantization.get("training_config_sha256") != sha256_file(config_path):
-        raise ValueError("Quantization manifest is not bound to this training configuration")
-    if quantization.get("development_release_sha256") != sha256_file(release_path):
-        raise ValueError("Quantization manifest is not bound to this development release")
-    if quantization.get("internal_test_accessed") is not False or quantization.get("challenge_data_accessed") is not False:
-        raise ValueError("Quantization provenance does not certify untouched evaluation data")
-    artifact_record = quantization.get("artifacts", {}).get("torchscript", {})
-    quantized_model_path = quantization_manifest_path.parent / artifact_record.get("path", "")
-    if not quantized_model_path.is_file() or sha256_file(quantized_model_path) != artifact_record.get("sha256"):
-        raise ValueError("Serialized quantized artifact is missing or its hash differs")
+    quantization, quantized_model_path, tokenizer_dir = validate_quantized_artifacts(
+        quantization_manifest_path, selection_path, config_path, release_path
+    )
     global_lock_path = selection_path.with_suffix(selection_path.suffix + ".internal_test_evaluated.lock")
     if global_lock_path.exists():
         raise FileExistsError(f"This frozen selection already has an internal-test evaluation lock: {global_lock_path}")
     test_rows = [row for row in rows if row["Split"] == "internal_test"]
     # Challenge data are never read by this script.
     np, torch, transformers, DataLoader, Dataset, AutoModel, AutoTokenizer, _Trainer, _TrainingArguments = require_ml_dependencies()
-    tokenizer_dir = quantization_manifest_path.parent / quantization.get("artifacts", {}).get("tokenizer_directory", "")
-    if not tokenizer_dir.is_dir():
-        raise ValueError("Quantized artifact tokenizer directory is missing")
     tokenizer = AutoTokenizer.from_pretrained(str(tokenizer_dir), local_files_only=True, use_fast=True)
     model = torch.jit.load(str(quantized_model_path), map_location="cpu").eval()
     predictions = score_fixed_length(

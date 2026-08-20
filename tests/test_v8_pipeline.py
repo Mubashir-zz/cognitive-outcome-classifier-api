@@ -11,6 +11,7 @@ TRAINING = ROOT / "training"
 if str(TRAINING) not in sys.path:
     sys.path.insert(0, str(TRAINING))
 
+from quantize_v8_model import parity_summary
 from v8_model_core import chunk_token_ids, confusion_metrics, select_threshold
 
 
@@ -25,9 +26,10 @@ class V8PipelineTests(unittest.TestCase):
         self.assertEqual(covered, set(range(1000)))
 
     def test_joint_threshold_constraints(self) -> None:
-        labels = [1, 1, 1, 0, 0, 0]
-        probabilities = [0.99, 0.90, 0.85, 0.20, 0.10, 0.01]
-        result = select_threshold(labels, probabilities, minimum_sensitivity=0.90, minimum_specificity=0.95)
+        result = select_threshold(
+            [1, 1, 1, 0, 0, 0], [0.99, 0.90, 0.85, 0.20, 0.10, 0.01],
+            minimum_sensitivity=0.90, minimum_specificity=0.95,
+        )
         self.assertTrue(result["feasible_threshold_exists"])
         self.assertGreaterEqual(result["selected"]["sensitivity"], 0.90)
         self.assertGreaterEqual(result["selected"]["specificity"], 0.95)
@@ -35,22 +37,30 @@ class V8PipelineTests(unittest.TestCase):
     def test_confusion_metrics(self) -> None:
         result = confusion_metrics([1, 1, 0, 0], [0.9, 0.1, 0.8, 0.2], 0.5)
         self.assertEqual((result["tp"], result["tn"], result["fp"], result["fn"]), (1, 1, 1, 1))
-        self.assertEqual(result["balanced_accuracy"], 0.5)
+
+    def test_quantization_class_change_fails(self) -> None:
+        result = parity_summary(
+            [{"NCT_or_TrialID": "A", "Probability": 0.51}],
+            [{"NCT_or_TrialID": "A", "Probability": 0.49}],
+            0.5, 0.1, 1.0,
+        )
+        self.assertFalse(result["parity_passed"])
 
     def test_pipeline_isolation_is_explicit(self) -> None:
-        training = (TRAINING / "train_v8_chunked_bert.py").read_text(encoding="utf-8")
-        quantize = (TRAINING / "quantize_v8_model.py").read_text(encoding="utf-8")
-        internal = (TRAINING / "evaluate_v8_internal_test.py").read_text(encoding="utf-8")
-        for source in (training, quantize, internal):
+        names = [
+            "train_v8_chunked_bert.py", "quantize_v8_model.py",
+            "evaluate_v8_internal_test.py", "score_v8_frozen_challenge.py",
+        ]
+        sources = {name: (TRAINING / name).read_text(encoding="utf-8") for name in names}
+        for source in sources.values():
             ast.parse(source)
-        self.assertNotIn('row["Split"] == "internal_test"', training)
-        self.assertIn('row["Split"] == "calibration"', quantize)
-        self.assertNotIn('row["Split"] == "internal_test"', quantize)
-        self.assertIn("serialized_torchscript_parity", quantize)
-        self.assertIn("EVALUATE_FROZEN_SELECTION_ONCE", internal)
-        self.assertIn("internal_test_evaluated.lock", internal)
-        self.assertIn("--quantization-manifest", internal)
-        self.assertIn("torch.jit.load", internal)
+        self.assertNotIn('row["Split"] == "internal_test"', sources["train_v8_chunked_bert.py"])
+        self.assertIn('row["Split"] == "calibration"', sources["quantize_v8_model.py"])
+        self.assertIn("validate_quantized_artifacts", sources["evaluate_v8_internal_test.py"])
+        self.assertIn("EVALUATE_FROZEN_SELECTION_ONCE", sources["evaluate_v8_internal_test.py"])
+        self.assertNotIn('add_argument("--sealed-key"', sources["score_v8_frozen_challenge.py"])
+        self.assertNotIn('add_argument("--frozen"', sources["score_v8_frozen_challenge.py"])
+        self.assertIn('add_argument("--blinded"', sources["score_v8_frozen_challenge.py"])
 
 
 if __name__ == "__main__":

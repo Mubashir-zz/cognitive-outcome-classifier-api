@@ -9,7 +9,7 @@
   "content_tokens_per_chunk": 382,
   "chunk_overlap_tokens": 64,
   "trial_probability_aggregation": "maximum_chunk_probability",
-  "loss_weighting": "each chunk receives inverse number-of-chunks weight so each trial contributes total weight 1",
+  "loss_weighting": "each chunk receives inverse number-of-chunks weight, yielding equal expected trial contribution under uniform chunk minibatch sampling",
   "training": {
     "epochs": 4,
     "learning_rate": 0.00002,
@@ -24,7 +24,8 @@
     "method": "threshold selection on calibration split only",
     "minimum_sensitivity": 0.9,
     "minimum_specificity": 0.95,
-    "candidate_selection_order": ["feasible", "mcc", "balanced_accuracy", "sensitivity", "specificity"]
+    "threshold_selection_order": ["feasible", "mcc", "balanced_accuracy", "sensitivity", "specificity", "lower_threshold"],
+    "seed_selection_order": ["feasible", "mcc", "balanced_accuracy", "sensitivity", "specificity", "lower_seed"]
   },
   "internal_test": {
     "evaluated_once_after_seed_and_threshold_are_frozen": true,
