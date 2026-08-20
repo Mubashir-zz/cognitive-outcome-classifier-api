@@ -1,49 +1,33 @@
-# Neurocognitive Outcome Classifier -- API
+# Neurocognitive outcome classifier — v2 release candidate 2
 
-A research screening tool that predicts whether a clinical trial's outcome text registers a genuine neurocognitive assessment. Built on a hybrid design: fine-tuned Bio_ClinicalBERT (v7) for CNS trials, a validated keyword rule for Breast, Lung, and Head & Neck.
+This folder is a staging candidate, not the production service.
 
-**This is AI-assisted screening, not a final determination.** Every response includes a `review_recommended` flag -- predictions flagged this way should be checked by a human before being treated as ground truth.
+It preserves the v7 quantized CNS detector and the 66-term keyword detector while making each detector's evidence explicit. A response reports the BERT probability, binary BERT result, keyword hit and character offsets, decision basis, review reasons, source-text hash, truncation status, artifact hashes, and build commit. It does not call a keyword result a probability or send raw outcome text to the review webhook.
 
-## Setup
+Production promotion is intentionally blocked until the disjoint `CNS_challenge_set_300_BLINDED` sample receives frozen independent human labels and the release candidate passes the prespecified scientific, analytic-parity, memory, security, and regression gates.
 
-1. The v7 CNS model loads automatically from Hugging Face Hub (`Mubashir-ZZ/cognitive-classifier-v7-cns`, private) -- no local model files needed.
-2. Set the `HF_TOKEN` environment variable to a Hugging Face access token with read access to that private repo (Settings -> Access Tokens on huggingface.co). Never commit this token to the repo -- set it as an environment variable in Render's dashboard.
-3. `hybrid_config.json` (the keyword list) is already included in this repo.
-4. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-5. Run locally (with `HF_TOKEN` set in your environment):
-   ```
-   uvicorn main:app --reload
-   ```
-6. Test it:
-   ```
-   curl -X POST http://localhost:8000/predict \
-     -H "Content-Type: application/json" \
-     -d '{"cancer_type": "CNS", "outcome_text": "Change from baseline in Hopkins Verbal Learning Test", "trial_id": "TEST001"}'
-   ```
+The 0.5 BERT threshold, uncertainty zone, token limit, keyword list, and review-trigger list are all versioned in `hybrid_config.json`. Long CNS inputs disclose truncation and are routed to review rather than silently treated as complete model reads.
 
-## Endpoints
+## Local model test
 
-- `POST /predict` -- the main classification endpoint
-- `GET /about` -- purpose, model details, and known limitations (always disclosed, not buried)
-- `GET /health` -- basic health check
+Set `MODEL_DIR` to a directory containing the tokenizer files and `cns_v7_quantized.pt`, then run one worker:
 
-## Deploying for real use: Render (free tier)
+```bash
+CONFIG_PATH=./hybrid_config.json MODEL_DIR=/path/to/model uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+```
 
-Hugging Face Spaces' Docker/Gradio options require a paid plan (confirmed directly on their pricing page) -- Render has a genuine free tier for small Docker-based web services, so that's what this repo is set up for.
+## Required staging secrets
 
-1. Log into render.com (GitHub sign-in works, no separate password needed)
-2. New -> Web Service -> connect this GitHub repository
-3. Render auto-detects the `Dockerfile` in this repo -- no extra configuration needed
-4. In Render's dashboard, add an environment variable: `HF_TOKEN` = your Hugging Face access token (with read access to the private model repo)
-5. Deploy -- the model downloads automatically from Hugging Face Hub at startup, no manual file upload needed
+- `HF_TOKEN` when loading the private model from Hugging Face
+- `CLASSIFIER_API_KEY` to require `X-API-Key` on prediction routes
+- `REVIEW_QUEUE_WEBHOOK` only if the review queue accepts metadata without raw outcome text
 
-The included `Dockerfile` already uses port 8000 with `uvicorn`, matching Render's expected setup.
+## Gates before deployment
 
-## Known Limitations (also served live at /about)
+1. Blinded human adjudication completed, frozen, and analyzed with the challenge-set design weights.
+2. Candidate keyword output exactly reproduces the frozen analytic rule on matched full text, or a new analytic release is generated.
+3. Unit, API-contract, regression, cold-start, peak-memory, and concurrency tests pass.
+4. A separate staging service passes shadow comparison against production.
+5. Rollback image and immutable hashes are recorded.
 
-- A specific QoL-subscale pattern (EORTC QLQ-C30-style multi-subscale mentions) remains unresolved despite five targeted retraining rounds -- explicitly flagged via `REVIEW_TRIGGER_PATTERNS`.
-- Residual confident-but-wrong rate on novel content categories not represented in training, estimated at roughly 1 per 100-250 predictions from audit testing.
-- Fixes to one failure pattern have, in testing, occasionally caused regressions in unrelated previously-fixed cases. The review-flagging design assumes ongoing instability, not a fixed, known error set.
+Passing every gate allows manual promotion review; it never deploys automatically.
