@@ -48,6 +48,13 @@ class MainStaticTests(unittest.TestCase):
         ]
         self.assertEqual(bare_handlers, [])
 
+    def test_authenticated_diagnostics_exposes_memory_without_text(self):
+        function = self.function_source("diagnostics")
+        self.assertIn("peak_rss_mb", function)
+        self.assertNotIn("outcome_text", function)
+        middleware = self.function_source("request_security_controls")
+        self.assertNotIn('"/diagnostics"', middleware)
+
 
 if __name__ == "__main__":
     unittest.main()
