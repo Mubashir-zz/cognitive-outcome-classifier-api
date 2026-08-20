@@ -1,0 +1,23 @@
+name: classifier-v2-checks
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  pure-logic-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile source
+        run: python -m py_compile app/main.py app/logic.py tests/test_logic.py tests/test_config.py
+      - name: Run deterministic unit tests
+        run: python -m unittest discover -s tests -v
