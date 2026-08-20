@@ -3,7 +3,14 @@
 from __future__ import annotations
 
 import hashlib
+import sys
 import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from tools.validate_generative_extraction import validate
 
@@ -77,4 +84,3 @@ class GenerativeExtractionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-
