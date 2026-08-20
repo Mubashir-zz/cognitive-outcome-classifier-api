@@ -20,6 +20,7 @@ PROJECT_ROOT = STAGING_ROOT.parent if TRANSFER_LAYOUT else STAGING_ROOT
 STAGING_TEST_DIRECTORY = "staging_classifier_v2/tests" if TRANSFER_LAYOUT else "tests"
 STAGING_PREFIX = "staging_classifier_v2/" if TRANSFER_LAYOUT else ""
 EVALUATOR_PATH = "evaluate_classifier_release_gates.py" if TRANSFER_LAYOUT else "training/evaluate_classifier_release_gates.py"
+READINESS_AUDITOR_PATH = "verify_cns_expansion_readiness.py" if TRANSFER_LAYOUT else "training/verify_cns_expansion_readiness.py"
 TEST_COUNT = re.compile(r"Ran (\d+) tests? in")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
@@ -70,6 +71,7 @@ def main() -> None:
             [
                 "-m", "py_compile",
                 EVALUATOR_PATH,
+                READINESS_AUDITOR_PATH,
                 f"{STAGING_PREFIX}app/main.py",
                 f"{STAGING_PREFIX}app/logic.py",
                 f"{STAGING_PREFIX}app/model_runtime.py",

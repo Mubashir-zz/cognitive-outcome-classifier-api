@@ -65,6 +65,15 @@ class V8PipelineTests(unittest.TestCase):
         self.assertIn("technical_collector_binding", evaluator)
         self.assertIn("technical_evidence_checks", evaluator)
 
+    def test_expansion_readiness_auditor_is_fail_closed_and_key_blind(self) -> None:
+        auditor = (TRAINING / "verify_cns_expansion_readiness.py").read_text(encoding="utf-8")
+        ast.parse(auditor)
+        self.assertIn("WAITING_FOR_REQUIRED_EXECUTIONS", auditor)
+        self.assertIn("HOLD_INVALID_OR_MIXED_EVIDENCE", auditor)
+        self.assertIn("READY_FOR_MANUAL_PROMOTION_REVIEW", auditor)
+        self.assertNotIn('add_argument("--sealed-key"', auditor)
+        self.assertIn('"sealed_answer_key_read_by_this_auditor": False', auditor)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

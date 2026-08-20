@@ -25,6 +25,8 @@ jobs:
           scripts/smoke_v8_api_contract.py scripts/run_classifier_release_tests.py
           scripts/collect_classifier_technical_results.py
           training/evaluate_classifier_release_gates.py
+          training/verify_cns_expansion_readiness.py
+          tests/test_expansion_readiness.py
           tests/test_logic.py tests/test_config.py
       - name: Run deterministic unit tests
         run: python -m unittest discover -s tests -v

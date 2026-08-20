@@ -101,3 +101,15 @@ python3 scripts/collect_classifier_technical_results.py \
 ```
 
 The rollback record must identify the candidate manifest and build commit, a distinct 40-character rollback commit, an immutable `sha256:<64 hex>` container digest, a passed restore drill, and `production_changed: false`. Missing or inconsistent evidence produces `HOLD`; the collector and release evaluator never deploy.
+
+## Complete readiness audit
+
+After the scientific and technical evidence has been generated, run the independent chain auditor from the private workspace:
+
+```bash
+python3 training/verify_cns_expansion_readiness.py \
+  --workspace /private/path/cns_v8 \
+  --output /private/path/cns_v8/CNS_EXPANSION_READINESS_AUDIT.json
+```
+
+The auditor verifies one hash-bound chain from the frozen development release through all five seeds, calibration-only selection, serialized quantization, one-time internal testing, frozen human adjudication, post-freeze overlap flags, blinded v8 challenge predictions, design-weighted validation, staging evidence, and the manual-review gate. It has no sealed-key argument and does not deploy. Missing work reports `WAITING_FOR_REQUIRED_EXECUTIONS`; invalid or mixed evidence reports `HOLD_INVALID_OR_MIXED_EVIDENCE`.
