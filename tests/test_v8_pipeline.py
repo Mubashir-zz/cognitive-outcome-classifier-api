@@ -49,6 +49,8 @@ class V8PipelineTests(unittest.TestCase):
         self.assertIn("serialized_torchscript_parity", quantize)
         self.assertIn("EVALUATE_FROZEN_SELECTION_ONCE", internal)
         self.assertIn("internal_test_evaluated.lock", internal)
+        self.assertIn("--quantization-manifest", internal)
+        self.assertIn("torch.jit.load", internal)
 
 
 if __name__ == "__main__":

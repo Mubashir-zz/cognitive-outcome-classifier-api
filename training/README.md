@@ -8,7 +8,7 @@ The pipeline:
 2. trains five prespecified Bio_ClinicalBERT seeds with full-text overlapping chunks;
 3. selects one seed and threshold from CNS calibration records only;
 4. quantizes only the selected candidate and requires parity from the final serialized artifact;
-5. evaluates the frozen internal test once, with an explicit acknowledgement and a permanent selection-level lock;
+5. evaluates that exact hash-verified serialized artifact on the frozen internal test once, with an explicit acknowledgement and a permanent selection-level lock;
 6. leaves the independent 300-record challenge set untouched until human labels are frozen.
 
 Training data and challenge files are intentionally excluded from GitHub. The local development release has 2,247 unique trial IDs and unique normalized texts, split into 1,573 training, 337 calibration, and 337 internal-test records. Nine source rows matching three challenge text hashes were excluded before splitting.
@@ -42,4 +42,3 @@ The internal-test command is deliberately separate and requires the literal ackn
 - Internal-test performance is not external validation.
 - The external challenge set is deliberately enriched; unweighted performance is not population performance.
 - Passing model metrics alone does not satisfy API privacy, parity, container-memory, cold-start, or rollback gates.
-
