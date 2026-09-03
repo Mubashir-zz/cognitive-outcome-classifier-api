@@ -1,49 +1,150 @@
-# Neurocognitive Outcome Classifier -- API
+# Neurocognitive Outcome Classifier — API
 
-A research screening tool that predicts whether a clinical trial's outcome text registers a genuine neurocognitive assessment. Built on a hybrid design: fine-tuned Bio_ClinicalBERT (v7) for CNS trials, a validated keyword rule for Breast, Lung, and Head & Neck.
+Predicts whether a clinical trial's registered outcome text contains a genuine
+neurocognitive assessment. Built as the serving layer for a study measuring how
+often oncology trials actually measure cognition.
 
-**This is AI-assisted screening, not a final determination.** Every response includes a `review_recommended` flag -- predictions flagged this way should be checked by a human before being treated as ground truth.
+**Live:** https://cognitive-outcome-classifier-api.onrender.com/about
 
-## Setup
+It runs on Render's free tier, so the first request after a quiet period takes
+30–50 seconds to wake the instance. After that it responds in well under a second.
 
-1. The v7 CNS model loads automatically from Hugging Face Hub (`Mubashir-ZZ/cognitive-classifier-v7-cns`, private) -- no local model files needed.
-2. Set the `HF_TOKEN` environment variable to a Hugging Face access token with read access to that private repo (Settings -> Access Tokens on huggingface.co). Never commit this token to the repo -- set it as an environment variable in Render's dashboard.
-3. `hybrid_config.json` (the keyword list) is already included in this repo.
-4. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-5. Run locally (with `HF_TOKEN` set in your environment):
-   ```
-   uvicorn main:app --reload
-   ```
-6. Test it:
-   ```
-   curl -X POST http://localhost:8000/predict \
-     -H "Content-Type: application/json" \
-     -d '{"cancer_type": "CNS", "outcome_text": "Change from baseline in Hopkins Verbal Learning Test", "trial_id": "TEST001"}'
-   ```
+```bash
+curl -X POST https://cognitive-outcome-classifier-api.onrender.com/predict \
+  -H "Content-Type: application/json" \
+  -d '{"cancer_type":"CNS","trial_id":"NCT00000000",
+       "outcome_text":"Change from baseline in Hopkins Verbal Learning Test - Revised at 6 months"}'
+```
+
+```json
+{
+  "trial_id": "NCT00000000",
+  "predicted_cognitive": true,
+  "confidence": 0.9965,
+  "method": "BERT (v7, quantized)",
+  "review_recommended": false,
+  "review_reason": null
+}
+```
+
+## Why this is a hybrid and not one model
+
+Cognitive outcomes are easy to spot in breast, lung and head & neck trials —
+the instruments are standardised, and a keyword rule hits 99–100% on held-out
+data. CNS trials are the hard case: the vocabulary is heterogeneous and full of
+things that look like cognition and are not. The NANO neurologic exam. Karnofsky
+performance status. A quality-of-life questionnaire's cognitive subscale.
+
+So the routing follows the evidence rather than a preference:
+
+| Cancer type | Route |
+|---|---|
+| CNS | Fine-tuned Bio_ClinicalBERT (v7), int8-quantized, TorchScript-traced |
+| Breast, Lung, HeadNeck | Validated 66-term keyword rule |
+
+A transformer for the other three types was tested and did not beat the keyword
+baseline, so it is not used for them. The comparison is in
+[`PHASE2_RESULTS.md`](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/results/PHASE2_RESULTS.md).
+
+## Review flagging
+
+The model is a screening aid and is designed around being wrong sometimes. A
+prediction is returned with `review_recommended: true` when either:
+
+- the BERT probability lands between 0.25 and 0.75, or
+- the text matches a pattern that produced confident-but-wrong predictions
+  during validation (`EORTC QLQ-C30`, `Karnofsky`, imaging biomarkers,
+  hospitalisation, haematological toxicity)
+
+The second case fires *even when the model is confident*, because on those
+categories confidence carries no information. Flagged predictions are optionally
+posted to a review queue via `REVIEW_QUEUE_WEBHOOK`; that call is best-effort
+and never blocks the response.
+
+Full error analysis in [MODEL_CARD.md](MODEL_CARD.md).
 
 ## Endpoints
 
-- `POST /predict` -- the main classification endpoint
-- `GET /about` -- purpose, model details, and known limitations (always disclosed, not buried)
-- `GET /health` -- basic health check
+| Method | Path | Notes |
+|---|---|---|
+| `POST` | `/predict` | Single trial |
+| `POST` | `/predict_batch` | Up to 6 trials, one batched forward pass for the CNS items |
+| `GET` | `/about` | Model lineage and known limitations, served live rather than buried in docs |
+| `GET` | `/health` | Liveness + device |
 
-## Deploying for real use: Render (free tier)
+`cancer_type` must be one of `CNS`, `Breast`, `Lung`, `HeadNeck`.
 
-Hugging Face Spaces' Docker/Gradio options require a paid plan (confirmed directly on their pricing page) -- Render has a genuine free tier for small Docker-based web services, so that's what this repo is set up for.
+The batch cap of 6 is not arbitrary. Batches of 25 caused repeated
+out-of-memory kills on Render's 512MB tier; 6 is the size that held up under
+load. The same constraint is why the served model is int8-quantized to 169MB
+instead of the 433MB float32 checkpoint.
 
-1. Log into render.com (GitHub sign-in works, no separate password needed)
-2. New -> Web Service -> connect this GitHub repository
-3. Render auto-detects the `Dockerfile` in this repo -- no extra configuration needed
-4. In Render's dashboard, add an environment variable: `HF_TOKEN` = your Hugging Face access token (with read access to the private model repo)
-5. Deploy -- the model downloads automatically from Hugging Face Hub at startup, no manual file upload needed
+## Scoring a file of trials
 
-The included `Dockerfile` already uses port 8000 with `uvicorn`, matching Render's expected setup.
+```bash
+python examples/score_trials.py trials.csv --out scored.csv
+```
 
-## Known Limitations (also served live at /about)
+Input needs `trial_id`, `cancer_type`, `outcome_text`. Output adds the
+prediction, confidence, route used, and the review flag with its reason.
 
-- A specific QoL-subscale pattern (EORTC QLQ-C30-style multi-subscale mentions) remains unresolved despite five targeted retraining rounds -- explicitly flagged via `REVIEW_TRIGGER_PATTERNS`.
-- Residual confident-but-wrong rate on novel content categories not represented in training, estimated at roughly 1 per 100-250 predictions from audit testing.
-- Fixes to one failure pattern have, in testing, occasionally caused regressions in unrelated previously-fixed cases. The review-flagging design assumes ongoing instability, not a fixed, known error set.
+## Running locally
+
+The CNS model lives in a private Hugging Face repo, so serving needs a token
+with read access to it:
+
+```bash
+pip install -r requirements.txt
+export HF_TOKEN=hf_...
+uvicorn main:app --reload
+```
+
+Docker:
+
+```bash
+docker build -t cognitive-classifier .
+docker run -p 8000:8000 -e HF_TOKEN=hf_... cognitive-classifier
+```
+
+The Dockerfile installs CPU-only PyTorch from a separate index. The default
+PyPI wheel pulls ~900MB of CUDA libraries that are never used here, and that
+alone was enough to blow the memory limit.
+
+## Tests
+
+```bash
+pip install pytest
+pytest
+```
+
+All decision rules live in `classifier.py`, which imports nothing heavier than
+`json`. That means the logic — thresholds, the uncertain band, every review
+trigger, the keyword rule — is tested with no model file, no token and no
+network, and CI runs it on every push. `main.py` handles model loading and HTTP
+and nothing else.
+
+## Layout
+
+```
+classifier.py        decision rules, dependency-free
+main.py              FastAPI app, model loading, batching
+hybrid_config.json   the 66-term validated keyword list
+tests/               41 tests over the decision logic
+examples/            batch scoring client
+Dockerfile           CPU-only build for the 512MB tier
+MODEL_CARD.md        training data, metrics, failure modes
+```
+
+## Scope
+
+Research screening — narrowing a registry pull to a reviewable candidate set.
+Not for clinical decision-making, and not a substitute for reading the trial
+record.
+
+## Related
+
+- [neurocognitive-outcome-classifier](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier) — training data, model development, R and Python
+
+## Author
+
+Mubashir Ahmad Khan
