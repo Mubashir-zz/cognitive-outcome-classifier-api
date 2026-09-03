@@ -103,6 +103,32 @@ prediction is flagged when either:
   predictions carry real false-positive load and the flagged queue is not
   optional.
 
+## Correction, 3 September 2026 — the routing rationale does not hold
+
+The CNS→BERT route above was justified by Phase 2, which found a keyword rule
+inadequate for CNS. That comparison used the development dataset's stored
+outcome-text column, truncated at a median of 400 characters against ~1,760 in
+the ClinicalTrials.gov outcome module.
+
+Repeating it on complete registry text reverses the conclusion. Of the 113
+trials labelled positive that the original keyword flagging missed — the trials
+that made CNS look hard — the same 66-term list recovers 1/113 on truncated text
+and **113/113 on full text**. In the deployment evaluation on full registry
+text, the keyword rule reached **100% recall on CNS**; this model reached **72%**.
+
+**On complete input the keyword rule outperforms this model for CNS.** The
+hybrid design was solving a problem created by the text pipeline, not by the
+language.
+
+The deployed behaviour is unchanged pending a decision on routing; this note
+exists so the model card does not assert a rationale the evidence no longer
+supports. Analysis:
+[truncation_recall_test.md](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/results/truncation_recall_test.md).
+
+Specificity is not established either way. The development set's negative pool
+was selected to be negative, so specificity computed on it is optimistic by
+construction. That comparison needs a random registry sample.
+
 ## Intended use
 
 Research screening: narrowing a large registry pull to a reviewable candidate

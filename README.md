@@ -46,6 +46,12 @@ A transformer for the other three types was tested and did not beat the keyword
 baseline, so it is not used for them. The comparison is in
 [`PHASE2_RESULTS.md`](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/results/PHASE2_RESULTS.md).
 
+> **The CNS half of that rationale no longer holds.** It rested on a comparison
+> run against text truncated at ~400 characters. On complete registry text the
+> keyword rule reaches 100% recall on CNS and this model reaches 72%. See
+> [MODEL_CARD.md](MODEL_CARD.md#correction-3-september-2026--the-routing-rationale-does-not-hold).
+> Deployed behaviour is unchanged pending a routing decision.
+
 ## Review flagging
 
 The model is a screening aid and is designed around being wrong sometimes. A
