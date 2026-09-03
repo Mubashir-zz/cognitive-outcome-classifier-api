@@ -1,0 +1,197 @@
+trial_id,cancer_type,human_label,predicted,confidence,method,review_recommended,review_reason,registry_text_chars,stored_text_chars
+NCT07065435,Breast,False,False,0.0,keyword_rule,False,,2188,400
+NCT01010854,Breast,False,False,0.0,keyword_rule,False,,88,89
+NCT01913067,Breast,False,False,0.0,keyword_rule,False,,755,400
+NCT06865755,Breast,False,False,0.0,keyword_rule,False,,3758,400
+NCT02350582,Breast,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,469,400
+NCT03613181,Breast,False,False,0.0,keyword_rule,False,,342,348
+NCT04860115,Breast,False,False,0.0,keyword_rule,False,,814,400
+NCT04385433,Breast,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,2028,400
+NCT03639948,Breast,False,False,0.0,keyword_rule,False,,864,400
+NCT00903305,Breast,False,False,0.0,keyword_rule,False,,146,147
+NCT00579800,Breast,False,False,0.0,keyword_rule,False,,311,312
+NCT05789901,Breast,False,False,0.0,keyword_rule,False,,2427,400
+NCT05274451,Breast,False,False,0.0,keyword_rule,False,,1272,400
+NCT02003560,Breast,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,786,400
+NCT07020962,Breast,False,False,0.0,keyword_rule,False,,1086,400
+NCT06903468,Breast,False,False,0.0,keyword_rule,False,,727,400
+NCT07127003,Breast,False,False,0.0,keyword_rule,False,,145,145
+NCT01251874,Breast,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('thrombocytopenia') -- verify manually.,1830,400
+NCT01329068,Breast,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq c30') -- verify manually.,682,400
+NCT03783546,Breast,False,False,0.0,keyword_rule,False,,1562,400
+NCT04355858,Breast,False,False,0.0,keyword_rule,False,,324,324
+NCT04465097,Breast,False,False,0.0,keyword_rule,False,,699,399
+NCT06728579,Breast,False,False,0.0,keyword_rule,False,,11416,400
+NCT07419867,Breast,False,False,0.0,keyword_rule,False,,1229,399
+NCT02301988,Breast,False,False,0.0,keyword_rule,False,,6812,400
+NCT06315296,Breast,True,True,1.0,keyword_rule,False,,2708,400
+NCT04783402,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,2811,400
+NCT03017560,Breast,True,True,1.0,keyword_rule,False,,973,400
+NCT06136923,Breast,True,True,1.0,keyword_rule,False,,1068,400
+NCT04321135,Breast,True,True,1.0,keyword_rule,False,,2560,400
+NCT07638852,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,2947,399
+NCT05867966,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,2479,400
+NCT05595577,Breast,True,True,1.0,keyword_rule,False,,5627,400
+NCT03371732,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,6433,400
+NCT02052115,Breast,True,True,1.0,keyword_rule,False,,658,399
+NCT06662474,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,1350,400
+NCT06281145,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,3581,399
+NCT02515487,Breast,True,True,1.0,keyword_rule,False,,4799,400
+NCT02224807,Breast,True,True,1.0,keyword_rule,False,,1591,400
+NCT02406794,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,5645,400
+NCT05168696,Breast,True,True,1.0,keyword_rule,False,,1649,400
+NCT06727773,Breast,True,True,1.0,keyword_rule,False,,3111,400
+NCT06406127,Breast,True,True,1.0,keyword_rule,False,,4960,400
+NCT02159157,Breast,True,True,1.0,keyword_rule,False,,1513,400
+NCT04950010,Breast,True,True,1.0,keyword_rule,False,,1490,400
+NCT07106632,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,12069,400
+NCT01801527,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,3471,399
+NCT07112521,Breast,True,True,1.0,keyword_rule,False,,3704,400
+NCT04418856,Breast,True,True,1.0,keyword_rule,False,,15320,400
+NCT06454864,Breast,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,8808,400
+NCT05566795,CNS,False,False,0.0393,"BERT (v7, quantized)",False,,5677,300
+NCT06454097,CNS,False,False,0.0071,"BERT (v7, quantized)",False,,805,300
+NCT06942104,CNS,False,False,0.0063,"BERT (v7, quantized)",False,,2191,300
+NCT01450449,CNS,False,False,0.0155,"BERT (v7, quantized)",False,,306,300
+NCT05399524,CNS,False,False,0.009,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,6505,300
+NCT07481721,CNS,False,False,0.01,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,2060,300
+NCT00498927,CNS,False,False,0.0139,"BERT (v7, quantized)",False,,597,300
+NCT06829173,CNS,False,False,0.0079,"BERT (v7, quantized)",False,,914,300
+NCT06183983,CNS,False,False,0.0211,"BERT (v7, quantized)",False,,1265,300
+NCT03551249,CNS,False,False,0.0061,"BERT (v7, quantized)",False,,502,299
+NCT06412952,CNS,False,False,0.0109,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('pet/ct') -- verify manually.,64,64
+NCT01089101,CNS,False,False,0.0047,"BERT (v7, quantized)",False,,2610,300
+NCT02082119,CNS,False,True,0.9935,"BERT (v7, quantized)",False,,1129,300
+NCT06598787,CNS,False,False,0.1855,"BERT (v7, quantized)",False,,1910,300
+NCT00689221,CNS,False,False,0.0052,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,6540,300
+NCT01648348,CNS,False,False,0.0065,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('eortc') -- verify manually.,5731,300
+NCT01351519,CNS,False,False,0.0052,"BERT (v7, quantized)",False,,686,300
+NCT03919071,CNS,False,False,0.0074,"BERT (v7, quantized)",False,,1656,299
+NCT00003535,CNS,False,False,0.0055,"BERT (v7, quantized)",False,,518,300
+NCT07077616,CNS,False,False,0.0071,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,22232,300
+NCT07338539,CNS,False,False,0.0119,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,1935,300
+NCT04109209,CNS,False,False,0.0204,"BERT (v7, quantized)",False,,3454,299
+NCT03675230,CNS,False,False,0.0097,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,345,300
+NCT01285414,CNS,False,False,0.008,"BERT (v7, quantized)",False,,1077,300
+NCT03948490,CNS,True,True,0.9988,"BERT (v7, quantized)",False,,4325,300
+NCT03728673,CNS,True,True,0.9989,"BERT (v7, quantized)",False,,3015,300
+NCT01305122,CNS,True,False,0.0615,"BERT (v7, quantized)",False,,9,9
+NCT02125786,CNS,True,False,0.2716,"BERT (v7, quantized)",True,BERT confidence (0.272) is in the uncertain zone.,6932,300
+NCT03291314,CNS,True,True,0.9979,"BERT (v7, quantized)",False,,959,300
+NCT05669820,CNS,True,True,0.998,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('eortc') -- verify manually.,860,300
+NCT04243005,CNS,True,False,0.0716,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,3787,300
+NCT04536649,CNS,True,True,0.9966,"BERT (v7, quantized)",False,,524,299
+NCT01872221,CNS,True,True,0.998,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('eortc') -- verify manually.,1404,300
+NCT07710131,CNS,True,True,0.9991,"BERT (v7, quantized)",False,,2634,300
+NCT00303849,CNS,True,True,0.9974,"BERT (v7, quantized)",False,,1333,300
+NCT01288235,CNS,True,True,0.999,"BERT (v7, quantized)",False,,2455,300
+NCT06468176,CNS,True,True,0.9991,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,14302,300
+NCT03345095,CNS,True,False,0.0185,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,2699,300
+NCT03180502,CNS,True,True,0.9988,"BERT (v7, quantized)",False,,7581,300
+NCT01071837,CNS,True,True,0.9975,"BERT (v7, quantized)",False,,245,252
+NCT04752280,CNS,True,True,0.9947,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,523,300
+NCT01894061,CNS,True,False,0.0066,"BERT (v7, quantized)",False,,3270,300
+NCT05230758,CNS,True,True,0.999,"BERT (v7, quantized)",False,,2044,300
+NCT01805453,CNS,True,True,0.9968,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('eortc') -- verify manually.,550,300
+NCT03868943,CNS,True,False,0.4791,"BERT (v7, quantized)",True,BERT confidence (0.479) is in the uncertain zone.,3492,300
+NCT04116138,CNS,True,True,0.9986,"BERT (v7, quantized)",True,Text matches a known-difficult pattern ('eortc') -- verify manually.,1828,300
+NCT06356883,CNS,True,True,0.9967,"BERT (v7, quantized)",False,,595,300
+NCT07291102,CNS,True,True,0.999,"BERT (v7, quantized)",False,,4257,299
+NCT05535166,CNS,True,False,0.0109,"BERT (v7, quantized)",False,,20475,300
+NCT03017573,HeadNeck,False,False,0.0,keyword_rule,False,,499,400
+NCT03049358,HeadNeck,False,False,0.0,keyword_rule,False,,2705,400
+NCT06161233,HeadNeck,False,False,0.0,keyword_rule,False,,1262,399
+NCT06223568,HeadNeck,False,False,0.0,keyword_rule,False,,1169,400
+NCT07723495,HeadNeck,False,False,0.0,keyword_rule,False,,366,194
+NCT02732613,HeadNeck,False,False,0.0,keyword_rule,False,,57,57
+NCT07084636,HeadNeck,False,False,0.0,keyword_rule,False,,959,400
+NCT06239220,HeadNeck,False,False,0.0,keyword_rule,False,,1504,400
+NCT04206592,HeadNeck,False,False,0.0,keyword_rule,False,,300,300
+NCT03640195,HeadNeck,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,3122,400
+NCT05063552,HeadNeck,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('pet/ct') -- verify manually.,2062,400
+NCT04208334,HeadNeck,False,False,0.0,keyword_rule,False,,266,266
+NCT06980038,HeadNeck,False,False,0.0,keyword_rule,False,,2119,400
+NCT02897375,HeadNeck,False,False,0.0,keyword_rule,False,,931,400
+NCT02170454,HeadNeck,False,False,0.0,keyword_rule,False,,193,193
+NCT02324881,HeadNeck,False,False,0.0,keyword_rule,False,,682,400
+NCT05815927,HeadNeck,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,1323,400
+NCT01701466,HeadNeck,False,False,0.0,keyword_rule,False,,271,271
+NCT06572423,HeadNeck,False,False,0.0,keyword_rule,False,,2795,400
+NCT01193790,HeadNeck,False,False,0.0,keyword_rule,False,,183,184
+NCT02795195,HeadNeck,False,False,0.0,keyword_rule,False,,591,399
+NCT04673981,HeadNeck,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,3059,400
+NCT05267314,HeadNeck,False,False,0.0,keyword_rule,False,,2698,400
+NCT06309225,HeadNeck,True,True,1.0,keyword_rule,False,,1867,400
+NCT03020329,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,2123,400
+NCT02642107,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,14890,400
+NCT02552966,HeadNeck,True,True,1.0,keyword_rule,False,,337,337
+NCT07044414,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,807,400
+NCT00963911,HeadNeck,True,True,1.0,keyword_rule,False,,4852,400
+NCT07235826,HeadNeck,True,True,1.0,keyword_rule,False,,2471,400
+NCT03047174,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,3348,400
+NCT04082793,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,806,400
+NCT03194074,HeadNeck,True,True,1.0,keyword_rule,False,,597,400
+NCT04936841,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,5187,400
+NCT04554667,HeadNeck,True,True,1.0,keyword_rule,False,,2895,400
+NCT06580002,HeadNeck,True,True,1.0,keyword_rule,False,,1936,400
+NCT07656025,HeadNeck,True,True,1.0,keyword_rule,False,,3952,400
+NCT05658731,HeadNeck,True,True,1.0,keyword_rule,False,,1580,400
+NCT03909256,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,4551,400
+NCT05303259,HeadNeck,True,True,1.0,keyword_rule,False,,766,400
+NCT04257968,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,4296,399
+NCT01687413,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,3478,399
+NCT04733495,HeadNeck,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,4418,400
+NCT04818099,HeadNeck,True,True,1.0,keyword_rule,False,,2323,400
+NCT01865201,HeadNeck,True,True,1.0,keyword_rule,False,,1371,400
+NCT03040024,HeadNeck,True,True,1.0,keyword_rule,False,,2356,400
+NCT02128906,HeadNeck,True,True,1.0,keyword_rule,False,,7870,400
+NCT04569097,HeadNeck,True,True,1.0,keyword_rule,False,,3577,399
+NCT01360554,Lung,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,10661,400
+NCT01221675,Lung,False,False,0.0,keyword_rule,False,,249,250
+NCT07171190,Lung,False,False,0.0,keyword_rule,False,,1438,400
+NCT07538193,Lung,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('hospitalization') -- verify manually.,2117,400
+NCT00826683,Lung,False,False,0.0,keyword_rule,False,,328,329
+NCT04487080,Lung,False,False,0.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,4244,399
+NCT03574194,Lung,False,False,0.0,keyword_rule,False,,461,400
+NCT02790190,Lung,False,False,0.0,keyword_rule,False,,91,94
+NCT06643000,Lung,False,False,0.0,keyword_rule,False,,146,146
+NCT02120807,Lung,False,False,0.0,keyword_rule,False,,1422,400
+NCT05159518,Lung,False,False,0.0,keyword_rule,False,,1330,400
+NCT00750269,Lung,False,False,0.0,keyword_rule,False,,4972,400
+NCT05269485,Lung,False,False,0.0,keyword_rule,False,,549,400
+NCT07349537,Lung,False,False,0.0,keyword_rule,False,,1887,400
+NCT03793387,Lung,False,False,0.0,keyword_rule,False,,327,327
+NCT00505024,Lung,False,False,0.0,keyword_rule,False,,359,360
+NCT06047301,Lung,False,False,0.0,keyword_rule,False,,2292,400
+NCT06110572,Lung,False,False,0.0,keyword_rule,False,,1397,400
+NCT00385177,Lung,False,False,0.0,keyword_rule,False,,114,117
+NCT04895709,Lung,False,False,0.0,keyword_rule,False,,2643,400
+NCT02962115,Lung,False,False,0.0,keyword_rule,False,,675,400
+NCT03563716,Lung,False,False,0.0,keyword_rule,False,,4127,400
+NCT07531095,Lung,False,False,0.0,keyword_rule,False,,581,400
+NCT01797471,Lung,False,False,0.0,keyword_rule,False,,2218,400
+NCT03803787,Lung,True,True,1.0,keyword_rule,False,,7487,400
+NCT06484491,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,4545,400
+NCT06610734,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,8874,400
+NCT02058056,Lung,True,True,1.0,keyword_rule,False,,773,400
+NCT04655976,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,7778,400
+NCT06315296,Lung,True,True,1.0,keyword_rule,False,,2708,400
+NCT03366376,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,517,400
+NCT03391362,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('karnofsky') -- verify manually.,3208,400
+NCT01970865,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,42328,400
+NCT01849484,Lung,True,True,1.0,keyword_rule,False,,112,114
+NCT00048997,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,7882,400
+NCT03164772,Lung,True,True,1.0,keyword_rule,False,,6985,400
+NCT03654105,Lung,True,True,1.0,keyword_rule,False,,2452,400
+NCT02837679,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,1424,400
+NCT06003335,Lung,True,True,1.0,keyword_rule,False,,3257,399
+NCT06238882,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,3454,400
+NCT05273814,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,1465,400
+NCT03358875,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,7484,400
+NCT04475939,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('qlq-c30') -- verify manually.,7615,399
+NCT03172988,Lung,True,True,1.0,keyword_rule,False,,706,400
+NCT02448992,Lung,True,True,1.0,keyword_rule,False,,775,400
+NCT01553916,Lung,True,True,1.0,keyword_rule,True,Text matches a known-difficult pattern ('eortc') -- verify manually.,6475,399
+NCT06557187,Lung,True,True,1.0,keyword_rule,False,,853,400
+NCT05236946,Lung,True,True,1.0,keyword_rule,False,,1085,400
+NCT04804644,Lung,True,True,1.0,keyword_rule,False,,3959,400

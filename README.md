@@ -110,6 +110,25 @@ The Dockerfile installs CPU-only PyTorch from a separate index. The default
 PyPI wheel pulls ~900MB of CUDA libraries that are never used here, and that
 alone was enough to blow the memory limit.
 
+## Evaluation against the live endpoint
+
+196 trials scored through the deployed API on 3 September 2026, with outcome text
+pulled from the ClinicalTrials.gov v2 API rather than from the stored dataset
+(the stored column is truncated at ~400 characters and drops the instrument):
+
+| | n | Agreement | Sensitivity | Specificity | Flagged |
+|---|---|---|---|---|---|
+| Overall | 196 | 95.9% | 93.0% | 99.0% | 32.1% |
+| CNS *(BERT)* | 49 | 83.7% | 72.0% | 95.8% | 36.7% |
+| Breast, Lung, Head & Neck *(keyword)* | 147 | 100% | 100% | 100% | 30.6% |
+
+The keyword rule made no errors in either direction on 147 trials, which is the
+clearest case for not routing those types through a model. CNS is the hard case
+and errs toward missing cognitive outcomes rather than inventing them. Four of the
+eight CNS errors were caught by the review flag — half, not all.
+
+Method, per-trial results and the full error analysis: [`validation/`](validation/).
+
 ## Tests
 
 ```bash

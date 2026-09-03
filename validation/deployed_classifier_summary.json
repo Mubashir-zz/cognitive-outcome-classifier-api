@@ -1,0 +1,92 @@
+{
+  "run_at_utc": "2026-09-03T12:04:52+00:00",
+  "endpoint": "https://cognitive-outcome-classifier-api.onrender.com",
+  "text_source": "ClinicalTrials.gov API v2, full outcome module",
+  "sampling": "label-balanced, 25 per cancer-type x label cell, seed 2026",
+  "overall": {
+    "n": 196,
+    "agreement": 0.9592,
+    "sensitivity": 0.93,
+    "specificity": 0.9896,
+    "flagged_for_review": 0.3214,
+    "confusion": {
+      "tp": 93,
+      "tn": 95,
+      "fp": 1,
+      "fn": 7
+    }
+  },
+  "by_cancer_type": {
+    "CNS": {
+      "n": 49,
+      "agreement": 0.8367,
+      "sensitivity": 0.72,
+      "specificity": 0.9583,
+      "flagged_for_review": 0.3673,
+      "confusion": {
+        "tp": 18,
+        "tn": 23,
+        "fp": 1,
+        "fn": 7
+      }
+    },
+    "Breast": {
+      "n": 50,
+      "agreement": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "flagged_for_review": 0.3,
+      "confusion": {
+        "tp": 25,
+        "tn": 25,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "Lung": {
+      "n": 49,
+      "agreement": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "flagged_for_review": 0.3265,
+      "confusion": {
+        "tp": 25,
+        "tn": 24,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "HeadNeck": {
+      "n": 48,
+      "agreement": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "flagged_for_review": 0.2917,
+      "confusion": {
+        "tp": 25,
+        "tn": 23,
+        "fp": 0,
+        "fn": 0
+      }
+    }
+  },
+  "routing": {
+    "keyword_rule": 147,
+    "BERT (v7, quantized)": 49
+  },
+  "flag_reasons": {
+    "Text matches a known-difficult pattern": 61,
+    "BERT confidence": 2
+  },
+  "stored_text_truncation": {
+    "trials_where_stored_text_is_shorter": 172,
+    "median_stored_chars": 400.0,
+    "median_registry_chars": 1848.5
+  },
+  "latency_seconds_per_trial": {
+    "median": null,
+    "mean": null,
+    "n_measured": 0
+  },
+  "caveat": "These trials are in the model's development set. Agreement is bounded above by memorisation and is not an external-validity estimate. Routing, flag rate and the truncation comparison are label-independent."
+}
