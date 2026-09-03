@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.pt
+*.bin
+.pytest_cache/
+.DS_Store
+*.bak
+scored_results.csv
