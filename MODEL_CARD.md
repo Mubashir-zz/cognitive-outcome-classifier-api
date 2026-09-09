@@ -13,7 +13,7 @@ The system is a hybrid, not a single model:
 | Breast, Lung, Head & Neck | Keyword-presence rule over a validated 66-term list | Instrument vocabulary is standardised in these types; the rule already sits at ~99–100% accuracy and a model adds nothing |
 
 Routing by cancer type came out of the Phase 2 comparison, not from a
-preference for either method — see `results/PHASE2_RESULTS.md` in the
+preference for either method — see [the manuscript](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/MANUSCRIPT.md) in the
 [classifier development repo](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier).
 
 ## Training data
@@ -123,7 +123,7 @@ language.
 The deployed behaviour is unchanged pending a decision on routing; this note
 exists so the model card does not assert a rationale the evidence no longer
 supports. Analysis:
-[truncation_recall_test.md](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/results/truncation_recall_test.md).
+[the manuscript](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/MANUSCRIPT.md).
 
 Specificity is not established either way. The development set's negative pool
 was selected to be negative, so specificity computed on it is optimistic by

@@ -44,7 +44,7 @@ So the routing follows the evidence rather than a preference:
 
 A transformer for the other three types was tested and did not beat the keyword
 baseline, so it is not used for them. The comparison is in
-[`PHASE2_RESULTS.md`](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/results/PHASE2_RESULTS.md).
+[the manuscript](https://github.com/Mubashir-zz/neurocognitive-outcome-classifier/blob/main/MANUSCRIPT.md).
 
 > **The CNS half of that rationale no longer holds.** It rested on a comparison
 > run against text truncated at ~400 characters. On complete registry text the
