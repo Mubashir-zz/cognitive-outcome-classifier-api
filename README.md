@@ -1,5 +1,7 @@
 # Neurocognitive Outcome Classifier — API
 
+[![tests](https://github.com/Mubashir-zz/cognitive-outcome-classifier-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Mubashir-zz/cognitive-outcome-classifier-api/actions/workflows/ci.yml)
+
 Predicts whether a clinical trial's registered outcome text contains a genuine
 neurocognitive assessment. Built as the serving layer for a study measuring how
 often oncology trials actually measure cognition.
